@@ -13,9 +13,9 @@
 * **Section:** A
 * **Business Domain:** Cinema & Event Ticket Booking
 * **Reference Platform Investigated:** Bookme.pk (`https://bookme.pk/movies`)
-* **Public GitHub Repository:** https://github.com/Moiz-Hassan-Sandhu(https://github.com/your-username/apex-cinema-lounge) *(Update with your repo URL)*
-* **Live Deployment Link:** [https://apex-cinema-lounge.vercel.app](https://apex-cinema-lounge.vercel.app) *(Update with your deployed URL)*
-* **Final Commit Hash:** `[Insert Final Git Commit Hash]`
+* **Public GitHub Repository:** [https://github.com/Moiz-Hassan-Sandhu/apex-cinema-ticketing](https://github.com/Moiz-Hassan-Sandhu/apex-cinema-ticketing)
+* **Live Deployment Link:** [https://apex-cinema-ticketing.vercel.app](https://apex-cinema-ticketing.vercel.app)
+* **Final Commit Hash:** `4e8bd39c56969b7aee280a4753724c4c6a3c1367`
 
 ---
 

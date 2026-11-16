@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useBooking } from '../context/BookingContext.jsx';
 import { TimerWarningModal } from '../components/TimerWarningModal.jsx';
+import { recordBookedSeats } from '../services/api.js';
 
 export function CheckoutPage() {
   const navigate = useNavigate();
@@ -104,6 +105,9 @@ export function CheckoutPage() {
     if (!ageCheck.isEligible) return;
 
     setIsSubmitting(true);
+
+    // Record seats permanently so they appear reserved/unavailable if user returns
+    recordBookedSeats(selectedMovie.id, selectedShowtime.id, selectedSeats.map(s => s.id));
 
     const bookingId = 'BK-' + Math.floor(100000 + Math.random() * 900000);
     const receipt = {

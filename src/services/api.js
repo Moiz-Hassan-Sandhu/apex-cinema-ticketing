@@ -69,7 +69,46 @@ export async function fetchMovieById(id) {
 }
 
 /**
+ * Persist booked seats in browser storage so booked seats stay permanently reserved
+ * across navigation and back-button clicks
+ */
+export function recordBookedSeats(movieId, showtimeId, seatIds = []) {
+  try {
+    const key = `apex_booked_${movieId}_${showtimeId}`;
+    const raw = localStorage.getItem(key);
+    const existing = raw ? JSON.parse(raw) : [];
+    const merged = Array.from(new Set([...existing, ...seatIds]));
+    localStorage.setItem(key, JSON.stringify(merged));
+  } catch (err) {
+    console.error('Failed to persist booked seats:', err);
+  }
+}
+
+export function getBookedSeats(movieId, showtimeId) {
+  try {
+    const key = `apex_booked_${movieId}_${showtimeId}`;
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function clearAllBookedSeats() {
+  try {
+    Object.keys(localStorage).forEach(k => {
+      if (k.startsWith('apex_booked_')) {
+        localStorage.removeItem(k);
+      }
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+/**
  * Fetch interactive hall seats for a showtime, supporting simulated conflicts
+ * and persisting completed customer bookings as reserved
  * @param {string} movieId
  * @param {string} showtimeId
  * @returns {Promise<Array>}
@@ -80,6 +119,10 @@ export async function fetchShowtimeSeats(movieId, showtimeId) {
 
   // Default reserved seats
   let reservedList = ['A3', 'B4', 'B5', 'C6', 'E3', 'E4'];
+
+  // Add all actually booked seats from confirmed transactions
+  const confirmedBookings = getBookedSeats(movieId, showtimeId);
+  reservedList = Array.from(new Set([...reservedList, ...confirmedBookings]));
 
   // Edge case toggle: simulate someone else taking seats C3 and C4 in real-time
   if (settings.simulateChangedSeatAvailability) {
