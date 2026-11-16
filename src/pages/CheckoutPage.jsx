@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useBooking } from '../context/BookingContext.jsx';
 import { TimerWarningModal } from '../components/TimerWarningModal.jsx';
-import { recordBookedSeats } from '../services/api.js';
+import { recordBookedSeats, fetchShowtimeSeats } from '../services/api.js';
 
 export function CheckoutPage() {
   const navigate = useNavigate();
@@ -19,12 +19,24 @@ export function CheckoutPage() {
     timerSeconds,
     isTimerRunning,
     extendTimer,
-    resetBookingAfterOrder
+    resetBookingAfterOrder,
+    seatConflicts,
+    removeConflictingSeats,
+    verifySeatAvailability
   } = useBooking();
 
   const [formErrors, setFormErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Re-verify seat availability on mount (Task 6.1 Conflict Recovery)
+  useEffect(() => {
+    if (selectedMovie && selectedShowtime) {
+      fetchShowtimeSeats(selectedMovie.id, selectedShowtime.id)
+        .then(seats => verifySeatAvailability(seats))
+        .catch(console.error);
+    }
+  }, [selectedMovie, selectedShowtime, verifySeatAvailability]);
 
   // Field validation preserving valid input (FR10, Decision 3)
   const validateField = (name, value, allValues) => {
@@ -189,6 +201,35 @@ export function CheckoutPage() {
           + Add 3 Mins
         </button>
       </aside>
+
+      {/* Task 6.1 Conflict Banner */}
+      {seatConflicts.length > 0 && (
+        <section className="notice-advisory notice-advisory-adult" role="alert" style={{ marginBottom: '24px' }}>
+          <h3 style={{ color: 'var(--accent-crimson)', fontSize: '1.2rem', marginBottom: '8px' }}>
+            ⚠️ Seat Availability Conflict Detected (Task 6.1)
+          </h3>
+          <p style={{ marginBottom: '12px' }}>
+            One or more of your held seats have just been reserved by another customer at the box office:
+          </p>
+          <ul style={{ listStyle: 'disc', paddingLeft: '20px', marginBottom: '16px' }}>
+            {seatConflicts.map(c => (
+              <li key={c.seatId} style={{ fontWeight: 700, color: '#fca5a5' }}>
+                {c.reason}
+              </li>
+            ))}
+          </ul>
+          <button
+            type="button"
+            className="btn btn-danger"
+            onClick={() => {
+              removeConflictingSeats();
+              if (selectedMovie) navigate(`/movies/${selectedMovie.id}`);
+            }}
+          >
+            Remove Conflicted Seats &amp; Pick Alternatives &rarr;
+          </button>
+        </section>
+      )}
 
       <div className="checkout-grid">
         {/* Left Column: Form & Reserved Seats */}
@@ -432,10 +473,10 @@ export function CheckoutPage() {
             type="button"
             className="btn btn-primary"
             onClick={handleSubmitBooking}
-            disabled={!pricing.canProceed || !ageCheck.isEligible || isSubmitting}
+            disabled={!pricing.canProceed || !ageCheck.isEligible || isSubmitting || seatConflicts.length > 0}
             style={{ width: '100%', marginTop: '20px', padding: '14px', fontSize: '1.05rem' }}
           >
-            {isSubmitting ? 'Confirming with Box Office...' : `Confirm & Reserve • PKR ${pricing.grandTotal.toLocaleString()}`}
+            {isSubmitting ? 'Confirming with Box Office...' : seatConflicts.length > 0 ? 'Resolve Seat Conflicts Above' : `Confirm & Reserve • PKR ${pricing.grandTotal.toLocaleString()}`}
           </button>
         </aside>
       </div>

@@ -22,7 +22,9 @@ export function DetailsPage() {
     selectedSeats,
     clearSeats,
     pricing,
-    verifySeatAvailability
+    verifySeatAvailability,
+    seatConflicts,
+    removeConflictingSeats
   } = useBooking();
 
   // Load movie data by ID
@@ -203,6 +205,28 @@ export function DetailsPage() {
           Click any available seat below to lock your reservation. Standard seats are rows A-D; luxury VIP leather recliners are rows E-F (+PKR 200).
         </p>
       </div>
+
+      {/* Task 6.1 Conflict Banner */}
+      {seatConflicts.length > 0 && (
+        <section className="notice-advisory notice-advisory-adult" role="alert" style={{ marginBottom: '24px' }}>
+          <h4 style={{ color: 'var(--accent-crimson)', fontSize: '1.15rem', marginBottom: '8px' }}>
+            ⚠️ Seat Availability Conflict Detected (Task 6.1)
+          </h4>
+          <p style={{ marginBottom: '12px', fontSize: '0.92rem' }}>
+            One or more of your held seats have just been reserved by another customer at the box office:
+          </p>
+          <ul style={{ listStyle: 'disc', paddingLeft: '20px', marginBottom: '16px' }}>
+            {seatConflicts.map(c => (
+              <li key={c.seatId} style={{ color: '#fca5a5', fontWeight: 700 }}>
+                {c.reason}
+              </li>
+            ))}
+          </ul>
+          <button type="button" className="btn btn-danger" onClick={removeConflictingSeats}>
+            Remove Conflicted Seats &amp; Pick Replacements
+          </button>
+        </section>
+      )}
 
       <SeatMap hallSeats={hallSeats} />
 
