@@ -4,7 +4,7 @@
 **Course:** CS4032 Web Programming — Assignment 02  
 **Domain:** Cinema & Event Ticket Booking  
 **Reference Website:** Bookme.pk (`https://bookme.pk/movies`)  
-
+**Reference Website:** Bookme.pk (`https://web.cinepax.com/`)
 ---
 
 ## Decision 1: 100% Upfront Transparent Fee Meter & Live Calculated Surcharges
