@@ -9,8 +9,8 @@
 | Field | Detail |
 |---|---|
 | **Student Name** | Moiz Hassan |
-| **Roll Number** | [Your Roll Number - e.g., 24I-XXXX] |
-| **Section** | [Your Section - e.g., A / B] |
+| **Roll Number** | 24i-2096 |
+| **Section** | A |
 | **Business Name** | Apex Cinema Lounge & Event Hub |
 | **Business Domain** | Cinema & Event Ticket Booking |
 | **Public GitHub Repository** | [https://github.com/Moiz-Hassan-Sandhu/apex-cinema-ticketing](https://github.com/Moiz-Hassan-Sandhu/apex-cinema-ticketing) |
